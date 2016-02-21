@@ -1,0 +1,42 @@
+{
+    "android": {
+        "FlurryAnalytics": {
+            "Origin": [
+                {
+                    "OriginName": "sdkbox", 
+                    "OriginParams": {
+                        "Key3": "Val3", 
+                        "Key2": "Val2", 
+                        "Key1": "Val1"
+                    }, 
+                    "OriginVersion": "v0.1"
+                }, 
+                {
+                    "OriginName": "sdkbox", 
+                    "OriginVersion": "v0.1"
+                }
+            ], 
+            "APIKey": "W5ZVZHBPY3K4QSY3TG77", 
+            "DefLocationLat": 104.06, 
+            "Level": 2, 
+            "AppVersion": "V0.1", 
+            "Pulse": true, 
+            "LocationReport": true, 
+            "DefLocationLon": 30.67, 
+            "LogEvent": true, 
+            "SessionTimeout": 10, 
+            "CrashReport": true, 
+            "Debug": false
+        }
+    }, 
+    "ios": {
+        "FlurryAnalytics": {
+            "APIKey": "GCFCB72BPD76GHXWQZWT", 
+            "Level": 2, 
+            "AppVersion": "V0.1", 
+            "SessionTimeout": 10, 
+            "CrashReport": true, 
+            "Debug": false
+        }
+    }
+}
