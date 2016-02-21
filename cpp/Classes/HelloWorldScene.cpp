@@ -1,5 +1,6 @@
 
 #include "HelloWorldScene.h"
+#include "PluginFlurryAnalytics/PluginFlurryAnalytics.h"
 
 USING_NS_CC;
 
@@ -58,16 +59,13 @@ void HelloWorld::createTestMenu()
 {
     auto menu = Menu::create();
 
-    menu->addChild(MenuItemLabel::create(Label::createWithSystemFont("Test Item 1", "sans", 24), [](Ref*){
-        CCLOG("Test Item 1");
-    }));
-
-    menu->addChild(MenuItemLabel::create(Label::createWithSystemFont("Test Item 2", "sans", 24), [](Ref*){
-        CCLOG("Test Item 2");
-    }));
-
-    menu->addChild(MenuItemLabel::create(Label::createWithSystemFont("Test Item 3", "sans", 24), [](Ref*){
-        CCLOG("Test Item 3");
+    menu->addChild(MenuItemLabel::create(Label::createWithSystemFont("log event", "sans", 24), [](Ref*){
+        CCLOG("Log Event");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        sdkbox::PluginFlurryAnalytics::logEvent("Test Event iOS");
+#else
+        sdkbox::PluginFlurryAnalytics::logEvent("Test Event Android");
+#endif
     }));
 
     menu->alignItemsVerticallyWithPadding(10);
