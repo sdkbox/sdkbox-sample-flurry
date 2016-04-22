@@ -2,7 +2,7 @@
 #include "PluginFlurryAnalytics/PluginFlurryAnalytics.h"
 #include "tolua_fix.h"
 #include "SDKBoxLuaHelper.h"
-#include "sdkbox/sdkbox.h"
+#include "sdkbox/Sdkbox.h"
 
 
 
