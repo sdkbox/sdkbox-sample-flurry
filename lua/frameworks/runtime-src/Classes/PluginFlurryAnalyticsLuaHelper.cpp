@@ -1,8 +1,6 @@
 
 #include "PluginFlurryAnalyticsLuaHelper.h"
 #include "PluginFlurryAnalytics/PluginFlurryAnalytics.h"
-#include "CCLuaEngine.h"
-#include "tolua_fix.h"
 #include "SDKBoxLuaHelper.h"
 #include <sstream>
 
