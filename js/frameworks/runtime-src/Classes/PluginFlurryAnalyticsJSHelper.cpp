@@ -2,26 +2,16 @@
 #include "PluginFlurryAnalyticsJSHelper.h"
 #include "PluginFlurryAnalytics/PluginFlurryAnalytics.h"
 #include <sstream>
-#include "js_manual_conversions.h"
-#include "ScriptingCore.h"
 #include "SDKBoxJSHelper.h"
 
 extern JSObject* jsb_sdkbox_PluginFlurryAnalytics_prototype;
 
 static JSContext* s_cx = nullptr;
 
-class FlurryAnalyticsListenerJs : public sdkbox::FlurryAnalyticsListener {
+class FlurryAnalyticsListenerJs : public sdkbox::FlurryAnalyticsListener, public sdkbox::JSListenerBase
+{
 public:
-    FlurryAnalyticsListenerJs(): mJsHandler(nullptr) {
-    }
-    ~FlurryAnalyticsListenerJs() {
-    }
-
-    void setHandler(JSObject* jsHandler) {
-        if (mJsHandler == jsHandler) {
-            return;
-        }
-        mJsHandler = jsHandler;
+    FlurryAnalyticsListenerJs():sdkbox::JSListenerBase() {
     }
 
     void flurrySessionDidCreateWithInfo(std::map<std::string, std::string>& info) {
@@ -32,7 +22,7 @@ public:
         JSContext* cx = s_cx;
         const char* func_name = "flurrySessionDidCreateWithInfo";
 
-        JS::RootedObject obj(cx, mJsHandler);
+        JS::RootedObject obj(cx, getJSDelegate());
         JSAutoCompartment ac(cx, obj);
 
 #if defined(MOZJS_MAJOR_VERSION)
@@ -91,9 +81,6 @@ private:
 
         return strStream.str();
     }
-
-private:
-    JSObject* mJsHandler;
 };
 
 #if defined(MOZJS_MAJOR_VERSION)
@@ -112,11 +99,10 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener(JSContext *c
         {
             ok = false;
         }
-        JSObject *tmpObj = args.get(0).toObjectOrNull();
 
         JSB_PRECONDITION2(ok, cx, false, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener : Error processing arguments");
         FlurryAnalyticsListenerJs* wrapper = new FlurryAnalyticsListenerJs();
-        wrapper->setHandler(tmpObj);
+        wrapper->setJSDelegate(args.get(0));
         sdkbox::PluginFlurryAnalytics::setListener(wrapper);
 
         args.rval().setUndefined();
