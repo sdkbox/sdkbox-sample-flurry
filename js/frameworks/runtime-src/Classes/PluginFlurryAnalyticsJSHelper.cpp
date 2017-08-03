@@ -42,14 +42,14 @@ public:
 #endif
         std::string jsonStr = map2JsonString(info);
 
-        jsval dataVal[1];
-        dataVal[0] = std_string_to_jsval(cx, jsonStr);
+        JS::Value dataVal[1];
+        dataVal[0] = SB_STR_TO_JSVAL(cx, jsonStr);
 
         if (JS_HasProperty(cx, obj, func_name, &hasAction) && hasAction) {
             if(!JS_GetProperty(cx, obj, func_name, &func_handle)) {
                 return;
             }
-            if(func_handle == JSVAL_VOID) {
+            if(func_handle == JS::NullValue()) {
                 return;
             }
 
@@ -84,7 +84,7 @@ private:
 };
 
 #if defined(MOZJS_MAJOR_VERSION)
-bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener(JSContext *cx, uint32_t argc, jsval *vp)
+bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener(JSContext *cx, uint32_t argc, JS::Value *vp)
 #elif defined(JS_VERSION)
 JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener(JSContext *cx, uint32_t argc, jsval *vp)
 #endif
@@ -102,18 +102,18 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener(JSContext *c
 
         JSB_PRECONDITION2(ok, cx, false, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener : Error processing arguments");
         FlurryAnalyticsListenerJs* wrapper = new FlurryAnalyticsListenerJs();
-        wrapper->setJSDelegate(args.get(0));
+        wrapper->setJSDelegate(cx, args.get(0));
         sdkbox::PluginFlurryAnalytics::setListener(wrapper);
 
         args.rval().setUndefined();
         return true;
     }
-    JS_ReportError(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener : wrong number of arguments");
+    JS_ReportErrorUTF8(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_setListener : wrong number of arguments");
     return false;
 }
 
 #if defined(MOZJS_MAJOR_VERSION)
-bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, uint32_t argc, jsval *vp)
+bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, uint32_t argc, JS::Value *vp)
 #elif defined(JS_VERSION)
 JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, uint32_t argc, jsval *vp)
 #endif
@@ -127,9 +127,7 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, 
             ok &= jsval_to_std_string(cx, args.get(0), &arg0);
             if (!ok) { ok = true; break; }
             int ret = sdkbox::PluginFlurryAnalytics::logEvent(arg0);
-            jsval jsret = JSVAL_NULL;
-            jsret = int32_to_jsval(cx, ret);
-            args.rval().set(jsret);
+            args.rval().set(JS::Int32Value(ret));
             return true;
         }
     } while (0);
@@ -144,21 +142,17 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, 
                 ok &= jsval_to_std_string(cx, args.get(1), &arg1);
                 if (!ok) { ok = true; break; }
                 int ret = sdkbox::PluginFlurryAnalytics::logEvent(arg0, arg1);
-                jsval jsret = JSVAL_NULL;
-                jsret = int32_to_jsval(cx, ret);
-                args.rval().set(jsret);
+                args.rval().set(JS::Int32Value(ret));
                 return true;
             } else if (args.get(1).isBoolean()) {
                 std::string arg0;
                 ok &= jsval_to_std_string(cx, args.get(0), &arg0);
                 if (!ok) { ok = true; break; }
                 bool arg1;
-                arg1 = JS::ToBoolean(args.get(1));
+                ok &= sdkbox::js_to_bool(cx, args.get(1), &arg1);
                 if (!ok) { ok = true; break; }
                 int ret = sdkbox::PluginFlurryAnalytics::logEvent(arg0, arg1);
-                jsval jsret = JSVAL_NULL;
-                jsret = int32_to_jsval(cx, ret);
-                args.rval().set(jsret);
+                args.rval().set(JS::Int32Value(ret));
                 return true;
             }
         }
@@ -173,21 +167,19 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent(JSContext *cx, 
             ok &= jsval_to_std_string(cx, args.get(1), &arg1);
             if (!ok) { ok = true; break; }
             bool arg2;
-            arg2 = JS::ToBoolean(args.get(2));
+            ok &= sdkbox::js_to_bool(cx, args.get(2), &arg2);
             if (!ok) { ok = true; break; }
             int ret = sdkbox::PluginFlurryAnalytics::logEvent(arg0, arg1, arg2);
-            jsval jsret = JSVAL_NULL;
-            jsret = int32_to_jsval(cx, ret);
-            args.rval().set(jsret);
+            args.rval().set(JS::Int32Value(ret));
             return true;
         }
     } while (0);
-    JS_ReportError(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent : wrong number of arguments");
+    JS_ReportErrorUTF8(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_logEvent : wrong number of arguments");
     return false;
 }
 
 #if defined(MOZJS_MAJOR_VERSION)
-bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin(JSContext *cx, uint32_t argc, jsval *vp)
+bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin(JSContext *cx, uint32_t argc, JS::Value *vp)
 #elif defined(JS_VERSION)
 JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin(JSContext *cx, uint32_t argc, jsval *vp)
 #endif
@@ -223,12 +215,12 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin(JSContext *cx,
             return true;
         }
     } while (0);
-    JS_ReportError(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin : wrong number of arguments");
+    JS_ReportErrorUTF8(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_addOrigin : wrong number of arguments");
     return false;
 }
 
 #if defined(MOZJS_MAJOR_VERSION)
-bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent(JSContext *cx, uint32_t argc, jsval *vp)
+bool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent(JSContext *cx, uint32_t argc, JS::Value *vp)
 #elif defined(JS_VERSION)
 JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent(JSContext *cx, uint32_t argc, jsval *vp)
 #endif
@@ -258,7 +250,7 @@ JSBool js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent(JSContext 
             return true;
         }
     } while (0);
-    JS_ReportError(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent : wrong number of arguments");
+    JS_ReportErrorUTF8(cx, "js_PluginFlurryAnalyticsJS_PluginFlurryAnalytics_endTimedEvent : wrong number of arguments");
     return false;
 }
 
